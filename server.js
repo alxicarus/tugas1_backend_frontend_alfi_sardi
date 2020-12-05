@@ -37,7 +37,7 @@ var WithDB = function WithDB(req,res,next){
                             end as 'index',
                             case
                             when nilai >= 60 then 'Lulus'
-                            else 'Tidak lulus'
+                            else 'Mengulang'
                             end as status
                         from alfi_sardi
         `)
