@@ -19,10 +19,10 @@ app.get('/',function(req,res){
 })
 
 const DB_CONFIG ={
-    user: "bootcamp",
-    password: "bootcamp*123",
-    server: "206.189.80.195",
-    database:"APIS"
+    user: "",
+    password: "",
+    server: "",
+    database:""
 }
 
 var WithDB = function WithDB(req,res,next){
