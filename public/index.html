@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Front End Dev</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.3/css/bootstrap.min.css" /> 
+</head>
+<body>
+    <h3>Web Mahasiswa</h3>
+    <form onsubmit="return submitData(event)">
+        <div class="row">
+            <div class="col-4">Nama Mahasiswa</div>
+            <div class="col-8">
+                <input id="nama_mhs" type="text" name="nama_mhs" placeholder="masukan nama"/>
+            </div>
+        
+            <div class="col-4">Mata Kuliah</div>
+            <div class="col-8">
+                <select class="form-control" type="text" id="matkul">
+                    <option value="Algoritma Pemrograman">Algoritma Pemrograman</option>
+                    <option value="Kalkulus">Kalkulus</option>
+                    <option value="Basis Data">Basis Data</option>
+                    <option value="Kewirausahaan">Kewirausahaan</option>
+                    <option value="Desain Web">Desain Web</option>
+                  </select>
+            </div>
+        
+            <div class="col-4">Nilai</div>
+            <div class="col-8">
+                <input id="nilai" type="number" name="nilai" placeholder="masukan nilai"/>
+            </div>
+        
+            <div class="col-4"></div>
+            <div class="col-8">
+                <button class="btn-small btn-primary" type="submit" name="submit">Submit</button>
+            </div>
+        </div>
+        
+    </form>
+    <table id="table-nilai" border="1" cellspacing="0" cellpadding="5">
+        <thead>
+            <tr>
+                <td>Nama Mahasiswa</td>
+                <td>Mata kuliah</td>
+                <td>Nilai</td>
+                <td>Index</td>
+                <td>Status</td>
+                <td>Action</td>
+            </tr>
+        </thead>
+        <tbody>
+           
+        </tbody>
+    </table>
+    <script>
+
+        function submitData(e){
+            e.preventDefault();
+            const nama_mhs = document.querySelector('#nama_mhs')
+            const matkul = document.querySelector('#matkul')
+            const nilai = document.querySelector('#nilai')
+
+            fetch('/simpan-mhs',{
+                method: 'POST',
+                headers:{
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    nama_mhs: nama_mhs.value,
+                    matkul:matkul.value,
+                    nilai:nilai.value
+                })
+            }).then(resp => resp.json()).then(resp => {
+                console.log("masuk")
+                alert('Data Berhasil disimpan')
+                getData();
+
+            })
+            return false
+        }
+
+        function hapus(id) {
+            fetch('/hapus-data/' + id, {
+                method: 'delete'
+            }).then(resp => {
+                getData();
+            });
+        }
+
+        function getData() {
+
+        
+            fetch('http://localhost:3000/db').then(resp => resp.json()).then(resp => {
+                const table = document.querySelector('#table-nilai').getElementsByTagName('tbody')[0];
+
+                //const data = JSON.parse(resp);
+                table.innerHTML = '';
+                
+                resp.forEach(r => { 
+                    const row = table.insertRow();
+                    
+                    const cellNama = row.insertCell();
+                    const cellMatkul = row.insertCell();
+                    const cellNilai = row.insertCell();
+                    const cellIndex = row.insertCell();
+                    const cellStatus = row.insertCell();
+                    const cellAction = row.insertCell();
+                    let warna = '';
+
+                    if(r.nilai >= 60){
+                        warna ='table-success';
+                    }else{
+                        warna = 'table-danger';
+                    }
+                    row.className= warna;
+
+                    cellNama.innerHTML = r.nama_mhs;
+                    cellMatkul.innerHTML = r.matkul;
+                    cellNilai.innerHTML = r.nilai;
+                    cellIndex.innerHTML = r.index;
+                    cellStatus.innerHTML = r.status;
+                    cellAction.innerHTML = `
+                        <button class="btn btn-danger" onclick="hapus(${r.id})">Hapus</button>
+                    `
+                    
+                });
+
+            });
+        }
+
+        getData();
+
+    </script>
+</body>
+</html>
